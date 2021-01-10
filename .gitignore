@@ -1,0 +1,35 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# Dependencies
+/node_modules
+package-lock.json
+
+# Testing
+/coverage
+
+# Typescript
+yarn.lock
+
+# MAC
+.DS_Store
+
+# Production
+/lib
+/build
+
+# Keys
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# MDB
+mdb*
+
+# All editor configs but vscode
+.editorconfig
+.idea
+
+# Logs
+*.log*
