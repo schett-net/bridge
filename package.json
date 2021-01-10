@@ -1,0 +1,50 @@
+{
+  "name": "bridge",
+  "version": "1.0.0",
+  "description": "Enoy it.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline"
+  },
+  "files": [
+    "lib",
+    "LICENSES"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snek-at/client.git"
+  },
+  "keywords": [],
+  "author": "schettn",
+  "license": "EUPL-1.2",
+  "bugs": {
+    "url": "https://github.com/snek-at/client/issues"
+  },
+  "homepage": "https://github.com/snek-at/client#readme",
+  "dependencies": {
+    "@apollo/client": "^3.1.5",
+    "@types/node": "^14.14.10",
+    "apollo-upload-client": "^14.1.1",
+    "graphql": "^14.7.0",
+    "graphql-tag": "^2.10.3",
+    "js-cookie": "^2.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
+    "@babel/plugin-syntax-bigint": "^7.8.3",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/apollo-upload-client": "^14.1.0",
+    "@types/js-cookie": "^2.2.6",
+    "prettier": "^2.2.1",
+    "typescript": "^3.9.7"
+  }
+}
