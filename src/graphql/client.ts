@@ -83,23 +83,21 @@ export default class GraphqlClient {
    * @param {DocumentNode} data The query structure
    * @param {Variables} variables A object which contains variables for
    *                           the query structure.
-   * @param {RequestHeaders} headers Optional headers which get appended to
-   *                         the endpoint headers.
    * @returns {Promise<GraphqlResult<T>>} Resolved apollo data object
    */
   async sendQuery<T>(
     data: DocumentNode,
-    variables?: Variables,
-    headers?: RequestHeaders
+    variables?: Variables
   ): Promise<GraphqlResult<T>> {
-    console.log("CLIENT", this.client.query);
     return this.client.query<T>({
       query: data,
       errorPolicy: "all",
       fetchPolicy: "network-only",
       variables,
       context: {
-        headers: { ...this.headers, ...headers },
+        context: {
+          headers: this.headers,
+        },
       },
     });
   }
@@ -108,23 +106,20 @@ export default class GraphqlClient {
    * Send: Provides requests for graphql mutations.
    *
    * @param {DocumentNode} data The query structure
-   * @param {Variables} variables A object which contains variables for
+   * @param {object} variables A object which contains variables for
    *                           the query structure.
-   * @param {RequestHeaders} headers Optional headers which get appended to
-   *                         the endpoint headers.
    * @returns {Promise<GraphqlResult<T>>} Resolved apollo data object
    */
   async sendMutation<T>(
     data: DocumentNode,
-    variables?: Variables,
-    headers?: RequestHeaders
+    variables?: Variables
   ): Promise<GraphqlResult<T>> {
     return this.client.mutate<T>({
       mutation: data,
       errorPolicy: "all",
       variables,
       context: {
-        headers: { ...this.headers, ...headers },
+        headers: this.headers,
       },
     });
   }
