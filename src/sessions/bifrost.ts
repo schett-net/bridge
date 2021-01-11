@@ -10,7 +10,6 @@ import { DocumentNode } from "graphql";
 
 import GraphqlClient from "../graphql/client";
 import {
-  RequestHeaders,
   tokenAuth_tokenAuth,
   tokenAuth_tokenAuth_user,
   Variables,
@@ -53,7 +52,7 @@ export default class BifrostSession extends Session {
    */
   set token(value: string | undefined) {
     if (value) {
-      this.client.headers.Authorization = `bearer ${value}`;
+      this.client.headers.Authorization = `JWT ${value}`;
     } else {
       delete this.client.headers.Authorization;
     }
@@ -127,27 +126,19 @@ export default class BifrostSession extends Session {
     }
   }
 
-  sendQuery = async <T>(
-    data: DocumentNode,
-    variables?: Variables,
-    headers?: RequestHeaders
-  ) => {
+  sendQuery = async <T>(data: DocumentNode, variables?: Variables) => {
     if (!this.token && !(await workflows.refreshTokens(this))) {
       await this.begin();
     }
 
-    return await this.client.sendQuery<T>(data, variables, headers);
+    return await this.client.sendQuery<T>(data, variables);
   };
 
-  sendMutation = async <T>(
-    data: DocumentNode,
-    variables?: Variables,
-    headers?: RequestHeaders
-  ) => {
+  sendMutation = async <T>(data: DocumentNode, variables?: Variables) => {
     if (!this.token && !(await workflows.refreshTokens(this))) {
       await this.begin();
     }
 
-    return await this.client.sendMutation<T>(data, variables, headers);
+    return await this.client.sendMutation<T>(data, variables);
   };
 }
