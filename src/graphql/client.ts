@@ -22,6 +22,7 @@ import {
   RequestHeaders,
   Variables,
 } from "../types";
+import { specifier } from "./specifier";
 
 /**
  * @class Graphql client which provides query and mutation functionality.
@@ -90,7 +91,7 @@ export default class GraphqlClient {
     variables?: Variables
   ): Promise<GraphqlResult<T>> {
     return this.client.query<T>({
-      query: data,
+      query: specifier(data),
       errorPolicy: "all",
       fetchPolicy: "no-cache",
       variables,
