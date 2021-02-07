@@ -6,6 +6,7 @@
  * in the LICENSE file at https://snek.at/license
  */
 
+import defaultConfig, { BridgeConfig } from "./bridge.config";
 import GraphqlClient from "./graphql/client";
 import BifrostSession from "./sessions/bifrost";
 
@@ -26,6 +27,7 @@ import BifrostSession from "./sessions/bifrost";
  *
  */
 export class BifrostBridge {
+  static config: BridgeConfig = defaultConfig;
   client: GraphqlClient;
   session: BifrostSession;
 
