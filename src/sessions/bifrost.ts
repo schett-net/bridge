@@ -27,6 +27,7 @@ type WorkflowResolveMeType = tokenAuth_tokenAuth_user;
  */
 export default class BifrostSession extends Session {
   client: GraphqlClient;
+  refreshInterval: NodeJS.Timeout | undefined;
   /**
    * Initializes a Bifrost session.
    *
@@ -125,6 +126,14 @@ export default class BifrostSession extends Session {
       return <T>{ anonymous: false, ...me?.user };
     }
   }
+
+  setRefreshTimer = (ms: number = 210000) => {
+    if (this.refreshInterval) clearInterval(this.refreshInterval);
+
+    this.refreshInterval = setInterval(async () => {
+      await workflows.refreshTokens(this);
+    }, ms);
+  };
 
   sendQuery = async <T>(data: DocumentNode, variables?: Variables) => {
     if (!this.token && !(await workflows.refreshTokens(this))) {
