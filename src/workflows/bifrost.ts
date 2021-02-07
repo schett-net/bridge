@@ -74,6 +74,10 @@ export const refreshTokens = async (
   if (errors && errors.length > 0) return false;
 
   if (data?.refreshToken) {
+    const { exp, origIat } = data.refreshToken.payload;
+
+    session.setRefreshTimer((exp - origIat - 30) * 1000);
+
     session.token = data.refreshToken.token;
     session.refreshToken = data.refreshToken.refreshToken;
 

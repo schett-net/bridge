@@ -70,8 +70,11 @@ export interface tokenAuthVariables {
 // ====================================================
 
 export interface refreshToken_refreshToken {
-  payload: any;
-  refreshExpiresIn: number;
+  payload: {
+    username: string;
+    exp: number;
+    origIat: number;
+  };
   token: string;
   refreshToken: string;
 }
