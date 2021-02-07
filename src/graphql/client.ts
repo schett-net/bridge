@@ -14,7 +14,7 @@ import {
   ApolloLink,
   InMemoryCache,
   NormalizedCacheObject,
-} from "@apollo/client";
+} from "@apollo/client/core";
 
 import {
   GraphqlOptions,
