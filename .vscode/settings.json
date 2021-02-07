@@ -22,7 +22,6 @@
   "[css]": {
     "editor.formatOnSave": true
   },
-  "terminal.integrated.fontFamily": "Consolas",
   "workbench.colorTheme": "Dracula Soft",
   "cSpell.ignoreWords": [
       "aichner",
