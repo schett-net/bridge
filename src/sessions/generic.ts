@@ -69,6 +69,7 @@ export default class Session {
     if (this.checkPlatform() === "WEB") {
       if (value) {
         Cookies.set(this.tokenName, value ? value : "", {
+          sameSite: "Lax",
           /* Expire time is set to 4 minutes */
           expires: 4 / 1440,
         });
@@ -92,6 +93,7 @@ export default class Session {
     if (this.checkPlatform() === "WEB") {
       if (value) {
         Cookies.set(this.refreshTokenName, value ? value : "", {
+          sameSite: "Lax",
           /* Expire time is set to 6 days */
           expires: 6,
         });
