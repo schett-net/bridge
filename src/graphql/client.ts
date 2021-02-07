@@ -92,7 +92,7 @@ export default class GraphqlClient {
     return this.client.query<T>({
       query: data,
       errorPolicy: "all",
-      fetchPolicy: "network-only",
+      fetchPolicy: "no-cache",
       variables,
       context: {
         context: {
