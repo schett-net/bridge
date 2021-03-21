@@ -40,10 +40,10 @@ export const makeTokens = async (
     }
   `;
 
-  const { data, errors } = await session.client.sendMutation<tokenAuth>(
-    document,
-    { username, password }
-  );
+  const { data, errors } = await session.client.mutate<tokenAuth>(document, {
+    username,
+    password,
+  });
 
   if (errors && errors.length > 0) return null;
 
@@ -66,10 +66,9 @@ export const refreshTokens = async (
     }
   `;
 
-  const { data, errors } = await session.client.sendMutation<refreshToken>(
-    document,
-    { refreshToken: session.refreshToken }
-  );
+  const { data, errors } = await session.client.mutate<refreshToken>(document, {
+    refreshToken: session.refreshToken,
+  });
 
   if (errors && errors.length > 0) return false;
 
@@ -101,10 +100,9 @@ export const revokeTokens = async (
     }
   `;
 
-  const { data, errors } = await session.client.sendMutation<revokeToken>(
-    document,
-    { refreshToken: session.refreshToken }
-  );
+  const { data, errors } = await session.client.mutate<revokeToken>(document, {
+    refreshToken: session.refreshToken,
+  });
 
   if (errors && errors.length > 0) return false;
 
@@ -134,7 +132,7 @@ export const resolveMe = async (
     }
   `;
 
-  const { data, errors } = await session.sendQuery<me>(document, {
+  const { data, errors } = await session.query<me>(document, {
     token: session.token,
   });
 

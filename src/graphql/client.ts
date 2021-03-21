@@ -79,14 +79,14 @@ export default class GraphqlClient {
   }
 
   /**
-   * Send: Provides requests for graphql queries.
+   * Provides requests for graphql queries.
    *
    * @param {DocumentNode} data The query structure
    * @param {Variables} variables A object which contains variables for
    *                           the query structure.
    * @returns {Promise<GraphqlResult<T>>} Resolved apollo data object
    */
-  async sendQuery<T>(
+  async query<T>(
     data: DocumentNode,
     variables?: Variables
   ): Promise<GraphqlResult<T>> {
@@ -104,14 +104,14 @@ export default class GraphqlClient {
   }
 
   /**
-   * Send: Provides requests for graphql mutations.
+   * Provides requests for graphql mutations.
    *
    * @param {DocumentNode} data The query structure
    * @param {object} variables A object which contains variables for
    *                           the query structure.
    * @returns {Promise<GraphqlResult<T>>} Resolved apollo data object
    */
-  async sendMutation<T>(
+  async mutate<T>(
     data: DocumentNode,
     variables?: Variables
   ): Promise<GraphqlResult<T>> {

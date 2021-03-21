@@ -10,7 +10,7 @@ describe("Test connection with `query me{username}`", () => {
       const client = new GraphqlClient(
         new URL("http://localhost:8000/graphql")
       );
-      const { data, errors } = await client.sendQuery(
+      const { data, errors } = await client.query(
         gql`
           query me {
             me {
@@ -30,7 +30,7 @@ describe("Test connection with `query me{username}`", () => {
 describe("Test image query with drop specifications (Requires valid token in test)", () => {
   it("image query does not return id field although it is specified in the document", async () => {
     const client = new GraphqlClient(new URL("http://localhost:8000/graphql"));
-    const { data, errors } = await client.sendQuery<{
+    const { data, errors } = await client.query<{
       images: { fileHash: string; id: string }[];
     }>(
       gql`
@@ -52,7 +52,7 @@ describe("Test image query with drop specifications (Requires valid token in tes
 describe("Test pages query with drop specifications (Requires valid token in test)", () => {
   it("image query does not return id field although it is specified in the document", async () => {
     const client = new GraphqlClient(new URL("http://localhost:8000/graphql"));
-    const { data, errors } = await client.sendQuery<{}>(
+    const { data, errors } = await client.query<{}>(
       gql`
         fragment pageInterfaceFields_pagesQuery on PageInterface {
           __typename

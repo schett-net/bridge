@@ -135,12 +135,20 @@ export default class BifrostSession extends Session {
     }, ms);
   };
 
-  sendQuery = async <T>(data: DocumentNode, variables?: Variables) => {
+  query = async <T>(data: DocumentNode, variables?: Variables) => {
     if (!this.token && !(await workflows.refreshTokens(this))) {
       await this.begin();
     }
 
-    return await this.client.sendQuery<T>(data, variables);
+    return await this.client.query<T>(data, variables);
+  };
+
+  mutate = async <T>(data: DocumentNode, variables?: Variables) => {
+    if (!this.token && !(await workflows.refreshTokens(this))) {
+      await this.begin();
+    }
+
+    return await this.client.mutate<T>(data, variables);
   };
 
   sendMutation = async <T>(data: DocumentNode, variables?: Variables) => {
