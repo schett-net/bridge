@@ -15,8 +15,8 @@ import BifrostSession from "./sessions/bifrost";
  *
  *        @see GraphqlClient
  *        Sending custom queries/mutation is provided by the following API:
- *          - Send query: `this.client.sendQuery`.
- *          - Send mutation: `this.client.sendMutation`.
+ *          - Send query: `this.client.query`.
+ *          - Send mutation: `this.client.mutate`.
  *
  *        @see BifrostSession
  *        If there is a need for independently re-authenticate request the
