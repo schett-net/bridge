@@ -37,8 +37,17 @@ export class BifrostBridge {
    * @param {string} sid Session identifier used for identifying cookies and to
    *                     avoid name collisions. E.g: `bifrost`
    */
-  constructor(url: string, sid: string = "generic") {
-    this.client = new GraphqlClient(new URL(url));
+  constructor(
+    endpoints: {
+      httpUrl: string;
+      wsUrl?: string;
+    },
+    sid: string = "generic"
+  ) {
+    const httpUrl = new URL(endpoints.httpUrl);
+    const wsUrl = endpoints.wsUrl ? new URL(endpoints.wsUrl) : undefined;
+
+    this.client = new GraphqlClient(httpUrl, wsUrl);
     this.session = new BifrostSession(sid + "-bifrost", this.client);
   }
 }

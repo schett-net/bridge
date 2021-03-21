@@ -151,11 +151,11 @@ export default class BifrostSession extends Session {
     return await this.client.mutate<T>(data, variables);
   };
 
-  sendMutation = async <T>(data: DocumentNode, variables?: Variables) => {
+  subscribe = async <T>(data: DocumentNode, variables?: Variables) => {
     if (!this.token && !(await workflows.refreshTokens(this))) {
       await this.begin();
     }
 
-    return await this.client.sendMutation<T>(data, variables);
+    return this.client.subscribe<T>(data, variables);
   };
 }

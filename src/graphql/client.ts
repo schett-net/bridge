@@ -14,7 +14,10 @@ import {
   ApolloLink,
   InMemoryCache,
   NormalizedCacheObject,
+  split,
 } from "@apollo/client/core";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 import {
   GraphqlOptions,
@@ -30,7 +33,7 @@ import { specifier } from "./specifier";
  *
  *        Through `errorPolicy: "all",` error awareness is guaranteed.
  *
- *        The `uri` must follow the default format.
+ *        The `httpUrl` and `wsUrl` must follow the default format.
  *        @see `https://tools.ietf.org/html/rfc1630`
  *
  */
@@ -42,10 +45,15 @@ export default class GraphqlClient {
   private client: ApolloClient<NormalizedCacheObject>;
 
   /**
-   * @param uri A uri of a graphql endpoint
+   * @param httpUrl A http(s) url of a graphql endpoint
+   * @param wsUrl A ws(s) url of a graphql endpoint
    * @param options Configuration options
    */
-  constructor(uri: URL, options: GraphqlOptions = { headers: {} }) {
+  constructor(
+    httpUrl: URL,
+    wsUrl: URL | undefined = undefined,
+    options: GraphqlOptions = { headers: {} }
+  ) {
     this.headers = options.headers;
 
     try {
@@ -56,12 +64,33 @@ export default class GraphqlClient {
     }
 
     try {
-      const uploadLink = createUploadLink({
-        uri: uri.toString(),
+      let apolloLink = createUploadLink({
+        uri: httpUrl.toString(),
         headers: options.headers,
       });
 
-      this.link = ApolloLink.from([uploadLink]);
+      if (wsUrl) {
+        const wsLink = new WebSocketLink({
+          uri: wsUrl.toString(),
+          options: {
+            reconnect: true,
+          },
+        });
+
+        apolloLink = split(
+          ({ query }) => {
+            const definition = getMainDefinition(query);
+            return (
+              definition.kind === "OperationDefinition" &&
+              definition.operation === "subscription"
+            );
+          },
+          wsLink,
+          apolloLink
+        );
+      }
+
+      this.link = ApolloLink.from([apolloLink]);
     } catch {
       //#ERROR
       throw new Error("An error occurred while initializing the API link!");
@@ -83,7 +112,7 @@ export default class GraphqlClient {
    *
    * @param {DocumentNode} data The query structure
    * @param {Variables} variables A object which contains variables for
-   *                           the query structure.
+   *                              the query structure.
    * @returns {Promise<GraphqlResult<T>>} Resolved apollo data object
    */
   async query<T>(
@@ -121,6 +150,26 @@ export default class GraphqlClient {
       variables,
       context: {
         headers: this.headers,
+      },
+    });
+  }
+
+  /**
+   * Provides requests for graphql subscriptions.
+   *
+   * @param {DocumentNode} data The query structure
+   * @param {Variables} variables A object which contains variables for
+   *                              the query structure.
+   * @returns {Observable<GraphqlResult<T>>} Apollo data observable
+   */
+  subscribe<T>(data: DocumentNode, variables?: Variables) {
+    return this.client.subscribe<T>({
+      query: data,
+      variables,
+      context: {
+        context: {
+          headers: this.headers,
+        },
       },
     });
   }
