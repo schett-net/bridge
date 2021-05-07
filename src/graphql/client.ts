@@ -6,6 +6,7 @@
  * in the LICENSE file at https://snek.at/license
  */
 
+import "isomorphic-fetch";
 import { createUploadLink } from "apollo-upload-client";
 import { DocumentNode } from "graphql";
 
