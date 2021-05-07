@@ -7,6 +7,8 @@
  */
 
 import "isomorphic-fetch";
+
+import ws from "ws";
 import { createUploadLink } from "apollo-upload-client";
 import { DocumentNode } from "graphql";
 
@@ -76,6 +78,7 @@ export default class GraphqlClient {
           options: {
             reconnect: true,
           },
+          webSocketImpl: ws,
         });
 
         apolloLink = split(
