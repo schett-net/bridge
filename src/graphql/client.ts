@@ -95,9 +95,10 @@ export default class GraphqlClient {
       }
 
       this.link = ApolloLink.from([apolloLink]);
-    } catch {
-      //#ERROR
-      throw new Error("An error occurred while initializing the API link!");
+    } catch (err) {
+      throw new Error(
+        `An error occurred while initializing the API link! ${err}`
+      );
     }
 
     try {
