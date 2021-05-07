@@ -64,7 +64,13 @@ export default class BifrostSession extends Session {
   }
   //> Getter
   get token() {
-    return super.token;
+    const token = super.token;
+
+    // Hand over token to client. This is needed when the token is only available
+    // by getter but not in current session context.
+    this.client.headers.Authorization = `JWT ${token}`;
+
+    return token;
   }
   get refreshToken() {
     return super.refreshToken;
@@ -91,40 +97,58 @@ export default class BifrostSession extends Session {
       resolveMe?: (session: BifrostSession) => Promise<WorkflowResolveMeType>;
     }
   ): Promise<T | undefined> {
-    // trigger workflow
-    const refreshSuccess = await workflows.refreshTokens(this);
+    let username: string;
+    let password: string;
+    let anonymous: boolean;
 
-    if (!refreshSuccess) {
-      let username: string;
-      let password: string;
-      let anonymous: boolean;
+    if (user) {
+      username = user.username;
+      password = user.password;
+      anonymous = false;
+    } else {
+      // trigger workflow
+      const refreshSuccess = await workflows.refreshTokens(this);
 
-      if (user) {
-        username = user.username;
-        password = user.password;
-        anonymous = false;
-      } else {
+      if (!refreshSuccess) {
         username = "cisco";
         password = "ciscocisco";
         anonymous = true;
+      } else {
+        // resolve current token
+        const me = await workflows.resolveMe(this);
+
+        return <T>{ anonymous: false, ...me?.user };
       }
-
-      const auth = await (workflow?.makeTokens || workflows.makeTokens)(
-        this,
-        username,
-        password
-      );
-
-      this.token = auth?.token;
-      this.refreshToken = auth?.refreshToken;
-
-      return <T>{ anonymous: false, ...auth?.user };
-    } else {
-      // resolve current token
-      const me = await workflows.resolveMe(this);
-
-      return <T>{ anonymous: false, ...me?.user };
     }
+
+    const auth = await (workflow?.makeTokens || workflows.makeTokens)(
+      this,
+      username,
+      password
+    );
+
+    this.token = auth?.token;
+    this.refreshToken = auth?.refreshToken;
+
+    return <T>{ anonymous, ...auth?.user };
+  }
+
+  /**
+   * End session.
+   *
+   * @returns {Promise<boolean>} Revoke status.
+   */
+  async end(): Promise<boolean> {
+    const revokeSuccess = await workflows.revokeTokens(this);
+
+    if (revokeSuccess) {
+      this.token = undefined;
+      this.refreshToken = undefined;
+
+      if (this.refreshInterval) clearInterval(this.refreshInterval);
+    }
+
+    return revokeSuccess;
   }
 
   setRefreshTimer = (ms: number = 210000) => {
