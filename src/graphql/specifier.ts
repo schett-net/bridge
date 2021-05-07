@@ -49,8 +49,6 @@ export const specifier = (
     })}
   `;
 
-  console.log(print(newDocument));
-
   return newDocument;
 };
 
