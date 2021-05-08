@@ -127,10 +127,14 @@ export default class BifrostSession extends Session {
       password
     );
 
-    this.token = auth?.token;
-    this.refreshToken = auth?.refreshToken;
+    if (auth) {
+      this.token = auth?.token;
+      this.refreshToken = auth?.refreshToken;
 
-    return <T>{ anonymous, ...auth?.user };
+      return <T>{ anonymous, ...auth?.user };
+    } else {
+      throw Error("Authentication failed");
+    }
   }
 
   /**
