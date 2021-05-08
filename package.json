@@ -1,5 +1,5 @@
 {
-  "name": "bridge",
+  "name": "@schettnet/bridge",
   "version": "1.0.0",
   "description": "Enoy it.",
   "main": "lib/index.js",
@@ -17,15 +17,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/snek-at/client.git"
+    "url": "git+https://github.com/schettnet/bridge.git"
   },
   "keywords": [],
   "author": "schettn",
   "license": "EUPL-1.2",
   "bugs": {
-    "url": "https://github.com/snek-at/client/issues"
+    "url": "https://github.com/schettnet/bridge/issues"
   },
-  "homepage": "https://github.com/snek-at/client#readme",
+  "homepage": "https://github.com/schettnet/bridge#readme",
   "dependencies": {
     "@apollo/client": "^3.1.5",
     "@types/node": "^14.14.10",
