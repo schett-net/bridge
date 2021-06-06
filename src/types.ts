@@ -107,13 +107,8 @@ export interface revokeTokenVariables {
 // GraphQL query operation: me
 // ====================================================
 
-export interface me_me_user {
-  username: string;
-}
-
 export interface me_me {
-  id: string | null;
-  user: me_me_user | null;
+  username: string;
 }
 
 export interface me {

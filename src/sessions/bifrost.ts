@@ -117,7 +117,7 @@ export default class BifrostSession extends Session {
         // resolve current token
         const me = await workflows.resolveMe(this);
 
-        return <T>{ anonymous: false, ...me?.user };
+        return <T>{ anonymous: false, ...me };
       }
     }
 
