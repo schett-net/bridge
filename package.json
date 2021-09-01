@@ -9,7 +9,9 @@
     "type-check:watch": "npm run type-check -- --watch",
     "build": "npm run build:types && npm run build:js",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --ignore \"src/**/*.test.ts\""
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --ignore \"src/**/*.test.ts\"",
+    "prepare": "husky install",
+    "release": "HUSKY=0 yarn semantic-release"
   },
   "files": [
     "lib",
@@ -44,14 +46,34 @@
     "@babel/plugin-syntax-bigint": "^7.8.3",
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-typescript": "^7.12.7",
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
     "@types/apollo-upload-client": "^14.1.0",
     "@types/isomorphic-fetch": "0.0.35",
     "@types/jest": "^26.0.20",
     "@types/js-cookie": "^2.2.6",
     "@types/ws": "^7.4.2",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.2",
     "jest": "^26.6.3",
     "jest-fetch-mock": "^3.0.3",
     "prettier": "^2.2.1",
+    "semantic-release": "^17.4.7",
     "typescript": "^3.9.7"
+  },
+  "lint-staged": {
+    "*.tsx,*.ts,*.js,!*js.snap": [
+      "prettier --write"
+    ],
+    "*.json,!package.json": [
+      "prettier --write"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
