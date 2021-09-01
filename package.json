@@ -1,6 +1,6 @@
 {
-  "name": "@schettnet/bridge",
-  "version": "1.0.2",
+  "name": "@schett-net/bridge",
+  "version": "1.0.0",
   "description": "Enoy it.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,15 +17,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/schettnet/bridge.git"
+    "url": "git+https://github.com/schett-net/bridge.git"
   },
   "keywords": [],
   "author": "schettn",
   "license": "EUPL-1.2",
   "bugs": {
-    "url": "https://github.com/schettnet/bridge/issues"
+    "url": "https://github.com/schett-net/bridge/issues"
   },
-  "homepage": "https://github.com/schettnet/bridge#readme",
+  "homepage": "https://github.com/schett-net/bridge#readme",
   "dependencies": {
     "@apollo/client": "^3.1.5",
     "@types/node": "^14.14.10",
