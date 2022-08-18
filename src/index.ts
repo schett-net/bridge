@@ -6,9 +6,10 @@
  * in the LICENSE file at https://snek.at/license
  */
 
-import defaultConfig, { BridgeConfig } from "./bridge.config";
-import GraphqlClient from "./graphql/client";
-import BifrostSession from "./sessions/bifrost";
+import defaultConfig, {BridgeConfig} from './bridge.config'
+import GraphqlClient from './graphql/client'
+import BifrostSession from './sessions/bifrost'
+import KanbonSession from './sessions/kanbon'
 
 /**
  * @class The bifrost bridge establishes a connection to an bifrost.
@@ -27,9 +28,9 @@ import BifrostSession from "./sessions/bifrost";
  *
  */
 export class BifrostBridge {
-  static config: BridgeConfig = defaultConfig;
-  client: GraphqlClient;
-  session: BifrostSession;
+  static config: BridgeConfig = defaultConfig
+  client: GraphqlClient
+  session: BifrostSession | KanbonSession
 
   /**
    *
@@ -39,15 +40,19 @@ export class BifrostBridge {
    */
   constructor(
     endpoints: {
-      httpUrl: string;
-      wsUrl?: string;
+      httpUrl: string
+      wsUrl?: string
     },
-    sid: string = "generic"
+    sid: string = 'generic'
   ) {
-    const httpUrl = new URL(endpoints.httpUrl);
-    const wsUrl = endpoints.wsUrl ? new URL(endpoints.wsUrl) : undefined;
+    const httpUrl = new URL(endpoints.httpUrl)
+    const wsUrl = endpoints.wsUrl ? new URL(endpoints.wsUrl) : undefined
 
-    this.client = new GraphqlClient(httpUrl, wsUrl);
-    this.session = new BifrostSession(sid + "-bifrost", this.client);
+    this.client = new GraphqlClient(httpUrl, wsUrl)
+
+    this.session = new BifrostSession(`${sid}-bifrost`, this.client)
   }
 }
+
+export {default as BifrostSession} from './sessions/bifrost'
+export {default as KanbonSession} from './sessions/kanbon'
