@@ -38,6 +38,7 @@ export default class KanbonSession extends BifrostSession {
       password: string
     },
     workflow?: {
+      resolveAnonymous?: boolean
       makeTokens?: (
         session: BifrostSession,
         username: string,
@@ -62,6 +63,13 @@ export default class KanbonSession extends BifrostSession {
         username = 'cisco'
         password = 'ciscocisco'
         anonymous = true
+
+        if (workflow?.resolveAnonymous === false) {
+          return <T>{
+            anonymous,
+            username
+          }
+        }
       } else {
         // resolve current token
         const me = await workflows.resolveMe(this)
@@ -82,15 +90,11 @@ export default class KanbonSession extends BifrostSession {
       password
     )
 
-    console.log(auth)
-
     if (auth) {
       this.token = auth?.token
       this.refreshToken = auth?.refreshToken
 
-      const me = await workflows.resolveMe(this)
-
-      return <T>{anonymous, ...me}
+      return <T>{anonymous, ...auth?.user}
     } else {
       throw Error('Authentication failed')
     }
