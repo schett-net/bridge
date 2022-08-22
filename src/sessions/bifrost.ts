@@ -68,7 +68,9 @@ export default class BifrostSession extends Session {
 
     // Hand over token to client. This is needed when the token is only available
     // by getter but not in current session context.
-    this.client.headers.Authorization = `JWT ${token}`
+    if (token) {
+      this.client.headers.Authorization = `JWT ${token}`
+    }
 
     return token
   }
