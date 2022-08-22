@@ -6,7 +6,7 @@
  * in the LICENSE file at https://snek.at/license
  */
 
-import { ApolloQueryResult, FetchResult } from "@apollo/client";
+import {ApolloQueryResult, FetchResult} from '@apollo/client'
 
 /**
  * Graphql Client Types:
@@ -18,21 +18,19 @@ import { ApolloQueryResult, FetchResult } from "@apollo/client";
  *  @type  Defines the types of a mutation and query response.
  */
 export type RequestHeaders = {
-  Authorization?: string;
-  [key: string]: any;
-};
+  Authorization?: string
+  [key: string]: any
+}
 
 export type Variables = {
-  [key: string]: any;
-};
+  [key: string]: any
+}
 
-export type GraphqlResult<T> =
-  | FetchResult<T, Record<string, any>, Record<string, any>>
-  | ApolloQueryResult<T>;
+export type GraphqlResult<T> = ApolloQueryResult<T>
 
 export type GraphqlOptions = {
-  headers: RequestHeaders;
-};
+  headers: RequestHeaders
+}
 
 /**
  * Graphql API Types:
@@ -45,24 +43,24 @@ export type GraphqlOptions = {
 // ====================================================
 
 export interface tokenAuth_tokenAuth_user {
-  username: string;
+  username: string
 }
 
 export interface tokenAuth_tokenAuth {
-  payload: any;
-  refreshExpiresIn: number;
-  user: tokenAuth_tokenAuth_user;
-  token: string;
-  refreshToken: string;
+  payload: any
+  refreshExpiresIn: number
+  user: tokenAuth_tokenAuth_user
+  token: string
+  refreshToken: string
 }
 
 export interface tokenAuth {
-  tokenAuth: tokenAuth_tokenAuth | null;
+  tokenAuth: tokenAuth_tokenAuth | null
 }
 
 export interface tokenAuthVariables {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 
 // ====================================================
@@ -71,20 +69,20 @@ export interface tokenAuthVariables {
 
 export interface refreshToken_refreshToken {
   payload: {
-    username: string;
-    exp: number;
-    origIat: number;
-  };
-  token: string;
-  refreshToken: string;
+    username: string
+    exp: number
+    origIat: number
+  }
+  token: string
+  refreshToken: string
 }
 
 export interface refreshToken {
-  refreshToken: refreshToken_refreshToken | null;
+  refreshToken: refreshToken_refreshToken | null
 }
 
 export interface refreshTokenVariables {
-  refreshToken?: string | null;
+  refreshToken?: string | null
 }
 
 // ====================================================
@@ -92,15 +90,15 @@ export interface refreshTokenVariables {
 // ====================================================
 
 export interface revokeToken_revokeToken {
-  revoked: number;
+  revoked: number
 }
 
 export interface revokeToken {
-  revokeToken: revokeToken_revokeToken | null;
+  revokeToken: revokeToken_revokeToken | null
 }
 
 export interface revokeTokenVariables {
-  refreshToken?: string | null;
+  refreshToken?: string | null
 }
 
 // ====================================================
@@ -108,13 +106,13 @@ export interface revokeTokenVariables {
 // ====================================================
 
 export interface me_me {
-  username: string;
+  username: string
 }
 
 export interface me {
-  me: me_me | null;
+  me: me_me | null
 }
 
 export interface meVariables {
-  token: string;
+  token: string
 }
