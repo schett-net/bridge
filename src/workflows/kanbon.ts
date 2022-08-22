@@ -29,6 +29,9 @@ export const makeTokens = async (
   | {
       token: string
       refreshToken: string
+      user: {
+        username: string
+      }
     }
   | null
   | undefined
@@ -39,6 +42,9 @@ export const makeTokens = async (
       userLogin(username: $username, password: $password) {
         token
         refreshToken
+        user {
+          username
+        }
       }
     }
   `
@@ -49,8 +55,6 @@ export const makeTokens = async (
     username,
     password
   })
-
-  console.log(data, errors)
 
   if (errors && errors.length > 0) return null
 
@@ -138,7 +142,7 @@ export const resolveMe = async (
   const document = gql`
     query userMe {
       userMe {
-        emailAddress
+        username
       }
     }
   `
