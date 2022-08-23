@@ -44,12 +44,13 @@ export type GraphqlOptions = {
 
 export interface tokenAuth_tokenAuth_user {
   username: string
+  [key: string]: any
 }
 
-export interface tokenAuth_tokenAuth {
+export interface tokenAuth_tokenAuth<User = {}> {
   payload: any
   refreshExpiresIn: number
-  user: tokenAuth_tokenAuth_user
+  user: tokenAuth_tokenAuth_user & User
   token: string
   refreshToken: string
 }
@@ -107,6 +108,7 @@ export interface revokeTokenVariables {
 
 export interface me_me {
   username: string
+  [key: string]: any
 }
 
 export interface me {
