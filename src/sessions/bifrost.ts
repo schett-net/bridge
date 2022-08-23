@@ -18,8 +18,6 @@ import * as workflows from '../workflows/bifrost'
 import Session from './generic'
 
 type SessionBeginType = tokenAuth_tokenAuth_user & {anonymous: boolean}
-type WorkflowMakeTokensType = tokenAuth_tokenAuth | null | undefined
-type WorkflowResolveMeType = tokenAuth_tokenAuth_user
 
 /**
  * @class The bifrost session guarantees session awareness to a bifrost API.
@@ -28,6 +26,19 @@ type WorkflowResolveMeType = tokenAuth_tokenAuth_user
 export default class BifrostSession extends Session {
   client: GraphqlClient
   refreshInterval: NodeJS.Timeout | undefined
+  options: {
+    resolveAnonymous?: boolean
+    workflows: typeof workflows
+  } = {
+    resolveAnonymous: true,
+    workflows: {
+      makeTokens: workflows.makeTokens,
+      resolveMe: workflows.resolveMe,
+      refreshTokens: workflows.refreshTokens,
+      revokeTokens: workflows.revokeTokens
+    }
+  }
+
   /**
    * Initializes a Bifrost session.
    *
@@ -35,12 +46,30 @@ export default class BifrostSession extends Session {
    * @param {string} sId A session name
    * @param {GraphqlClient} client A graphql client
    */
-  constructor(sId: string, client: GraphqlClient) {
+  constructor(
+    sId: string,
+    client: GraphqlClient,
+    options?: Partial<{
+      resolveAnonymous?: BifrostSession['options']['resolveAnonymous']
+      workflows?: Partial<BifrostSession['options']['workflows']>
+    }>
+  ) {
     super(sId)
 
     this.client = client
     this.tokenName = sId + '-' + this.tokenName
     this.refreshTokenName = sId + '-' + this.refreshTokenName
+
+    if (options) {
+      this.options = {
+        ...this.options,
+        ...options,
+        workflows: {
+          ...this.options.workflows,
+          ...options.workflows
+        }
+      }
+    }
   }
 
   //> Setter
@@ -85,21 +114,12 @@ export default class BifrostSession extends Session {
    * @param {string} user A User defined by username and password
    * @returns {Promise<??>} A SNEKAuth object
    */
-  async begin<T extends SessionBeginType>(
-    user?: {
-      username: string
-      password: string
-    },
-    workflow?: {
-      resolveAnonymous?: boolean
-      makeTokens?: (
-        session: BifrostSession,
-        username: string,
-        password: string
-      ) => Promise<WorkflowMakeTokensType>
-      resolveMe?: (session: BifrostSession) => Promise<WorkflowResolveMeType>
-    }
-  ): Promise<T | undefined> {
+  async begin<T extends {}>(user?: {
+    username: string
+    password: string
+  }): Promise<(SessionBeginType & T) | undefined> {
+    const {refreshTokens, resolveMe, makeTokens} = this.options.workflows
+
     let username: string
     let password: string
     let anonymous: boolean
@@ -110,22 +130,22 @@ export default class BifrostSession extends Session {
       anonymous = false
     } else {
       // trigger workflow
-      const refreshSuccess = await workflows.refreshTokens(this)
+      const refreshSuccess = await refreshTokens(this)
 
       if (!refreshSuccess) {
         username = 'cisco'
         password = 'ciscocisco'
         anonymous = true
 
-        if (workflow?.resolveAnonymous === false) {
-          return <T>{
+        if (this.options.resolveAnonymous === false) {
+          return <any>{
             anonymous,
             username
           }
         }
       } else {
         // resolve current token
-        const me = await workflows.resolveMe(this)
+        const me = await resolveMe(this)
 
         if (me?.username === 'cisco') {
           anonymous = true
@@ -133,21 +153,17 @@ export default class BifrostSession extends Session {
           anonymous = false
         }
 
-        return <T>{anonymous, ...me}
+        return <any>{anonymous, ...me}
       }
     }
 
-    const auth = await (workflow?.makeTokens || workflows.makeTokens)(
-      this,
-      username,
-      password
-    )
+    const auth = await makeTokens(this, username, password)
 
     if (auth) {
       this.token = auth?.token
       this.refreshToken = auth?.refreshToken
 
-      return <T>{anonymous, ...auth?.user}
+      return <any>{anonymous, ...auth?.user}
     } else {
       throw Error('Authentication failed')
     }
@@ -159,7 +175,9 @@ export default class BifrostSession extends Session {
    * @returns {Promise<boolean>} Revoke status.
    */
   async end(): Promise<boolean> {
-    const revokeSuccess = await workflows.revokeTokens(this)
+    const {revokeTokens} = this.options.workflows
+
+    const revokeSuccess = await revokeTokens(this)
 
     if (revokeSuccess) {
       this.token = undefined
@@ -172,15 +190,19 @@ export default class BifrostSession extends Session {
   }
 
   setRefreshTimer = (ms: number = 210000) => {
+    const {refreshTokens} = this.options.workflows
+
     if (this.refreshInterval) clearInterval(this.refreshInterval)
 
     this.refreshInterval = setInterval(async () => {
-      await workflows.refreshTokens(this)
+      await refreshTokens(this)
     }, ms)
   }
 
   query = async <T>(data: DocumentNode, variables?: Variables) => {
-    if (!this.token && !(await workflows.refreshTokens(this))) {
+    const {refreshTokens} = this.options.workflows
+
+    if (!this.token && !(await refreshTokens(this))) {
       await this.begin()
     }
 
@@ -188,7 +210,9 @@ export default class BifrostSession extends Session {
   }
 
   mutate = async <T>(data: DocumentNode, variables?: Variables) => {
-    if (!this.token && !(await workflows.refreshTokens(this))) {
+    const {refreshTokens} = this.options.workflows
+
+    if (!this.token && !(await refreshTokens(this))) {
       await this.begin()
     }
 
@@ -196,7 +220,9 @@ export default class BifrostSession extends Session {
   }
 
   subscribe = async <T>(data: DocumentNode, variables?: Variables) => {
-    if (!this.token && !(await workflows.refreshTokens(this))) {
+    const {refreshTokens} = this.options.workflows
+
+    if (!this.token && !(await refreshTokens(this))) {
       await this.begin()
     }
 
