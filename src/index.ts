@@ -54,5 +54,7 @@ export class BifrostBridge {
   }
 }
 
+export {KanbonUser} from './workflows/kanbon'
+
 export {default as BifrostSession} from './sessions/bifrost'
 export {default as KanbonSession} from './sessions/kanbon'

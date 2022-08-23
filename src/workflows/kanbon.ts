@@ -17,7 +17,7 @@ import {
   revokeToken_revokeToken
 } from '../types'
 
-export interface User extends me_me {
+export interface KanbonUser extends me_me {
   city: string
   country: string
   emailAddress: string
@@ -41,7 +41,7 @@ export const makeTokens = async (
   session: BifrostSession,
   username: string,
   password: string
-): Promise<tokenAuth_tokenAuth<User> | null | undefined> => {
+): Promise<tokenAuth_tokenAuth<KanbonUser> | null | undefined> => {
   // Document of the refresh mutation
   const document = gql`
     mutation userLogin($username: String!, $password: String!) {
@@ -69,7 +69,7 @@ export const makeTokens = async (
   `
 
   const {data, errors} = await session.client.mutate<{
-    userLogin: tokenAuth_tokenAuth<User>
+    userLogin: tokenAuth_tokenAuth<KanbonUser>
   }>(document, {
     username,
     password
@@ -156,7 +156,7 @@ export const revokeTokens = async (
 
 export const resolveMe = async (
   session: BifrostSession
-): Promise<User | undefined> => {
+): Promise<KanbonUser | undefined> => {
   // Document of the revoke mutation
   const document = gql`
     query userMe {
@@ -179,7 +179,7 @@ export const resolveMe = async (
     }
   `
 
-  const {data, errors} = await session.query<{userMe: User}>(document)
+  const {data, errors} = await session.query<{userMe: KanbonUser}>(document)
 
   if (errors && errors.length > 0) throw new Error(errors[0].message)
   if (data?.userMe) return data.userMe
