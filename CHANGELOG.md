@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/schett-net/bridge/compare/v1.1.0...v1.2.0) (2022-08-23)
+
+
+### Features
+
+* add user type and and more fields ([953b383](https://github.com/schett-net/bridge/commit/953b383838f21b31e83979e1fc68b253491f8ca7))
+* allow generic user type on tokenAuth_tokenAuth ([5484bde](https://github.com/schett-net/bridge/commit/5484bdee8384c91959ccbd6bf7a565a8d5c80d23))
+* make workflows and res. Anon. part of session ([61f10c7](https://github.com/schett-net/bridge/commit/61f10c7b6842cecd4f47123c001a60b20dd84137))
+
 # [1.1.0](https://github.com/schett-net/bridge/compare/v1.0.0...v1.1.0) (2022-08-22)
 
 
