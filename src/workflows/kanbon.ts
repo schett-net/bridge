@@ -17,6 +17,22 @@ import {
   revokeToken_revokeToken
 } from '../types'
 
+export interface User extends me_me {
+  city: string
+  country: string
+  emailAddress: string
+  emailVerified: boolean
+  firstName: string
+  lastLogoutAll: string
+  lastName: string
+  phoneNumber: string
+  street1: string
+  street2: string
+  tmpPhoneNumber: string
+  tmpEmailAddress: string
+  zipCode: string
+}
+
 // ====================================================
 // Workflow tasks: Authentication System
 // ====================================================
@@ -25,17 +41,7 @@ export const makeTokens = async (
   session: BifrostSession,
   username: string,
   password: string
-): Promise<
-  | {
-      token: string
-      refreshToken: string
-      user: {
-        username: string
-      }
-    }
-  | null
-  | undefined
-> => {
+): Promise<tokenAuth_tokenAuth<User> | null | undefined> => {
   // Document of the refresh mutation
   const document = gql`
     mutation userLogin($username: String!, $password: String!) {
@@ -44,13 +50,26 @@ export const makeTokens = async (
         refreshToken
         user {
           username
+          city
+          country
+          emailAddress
+          emailVerified
+          firstName
+          lastLogoutAll
+          lastName
+          phoneNumber
+          street1
+          street2
+          tmpPhoneNumber
+          tmpEmailAddress
+          zipCode
         }
       }
     }
   `
 
   const {data, errors} = await session.client.mutate<{
-    userLogin: tokenAuth_tokenAuth
+    userLogin: tokenAuth_tokenAuth<User>
   }>(document, {
     username,
     password
@@ -58,7 +77,7 @@ export const makeTokens = async (
 
   if (errors && errors.length > 0) return null
 
-  return data?.userLogin
+  return data.userLogin
 }
 
 export const refreshTokens = async (
@@ -137,17 +156,30 @@ export const revokeTokens = async (
 
 export const resolveMe = async (
   session: BifrostSession
-): Promise<me_me | undefined> => {
+): Promise<User | undefined> => {
   // Document of the revoke mutation
   const document = gql`
     query userMe {
       userMe {
         username
+        city
+        country
+        emailAddress
+        emailVerified
+        firstName
+        lastLogoutAll
+        lastName
+        phoneNumber
+        street1
+        street2
+        tmpPhoneNumber
+        tmpEmailAddress
+        zipCode
       }
     }
   `
 
-  const {data, errors} = await session.query<{userMe: me_me}>(document)
+  const {data, errors} = await session.query<{userMe: User}>(document)
 
   if (errors && errors.length > 0) throw new Error(errors[0].message)
   if (data?.userMe) return data.userMe
