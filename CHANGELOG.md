@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/schett-net/bridge/compare/v1.2.0...v1.2.1) (2022-09-13)
+
+
+### Bug Fixes
+
+* rename User to KanbonUser and export it ([e37a164](https://github.com/schett-net/bridge/commit/e37a164e975e153984220c2d637434cd41683692))
+
 # [1.2.0](https://github.com/schett-net/bridge/compare/v1.1.0...v1.2.0) (2022-08-23)
 
 
