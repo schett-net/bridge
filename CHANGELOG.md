@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/schett-net/bridge/compare/v1.3.0...v1.4.0) (2022-09-13)
+
+
+### Features
+
+* force publish ([a86a39f](https://github.com/schett-net/bridge/commit/a86a39fb99eb8987503b8b9eef833b0062e374a4))
+
 # [1.3.0](https://github.com/schett-net/bridge/compare/v1.2.1...v1.3.0) (2022-09-13)
 
 
