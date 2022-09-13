@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/schett-net/bridge/compare/v1.2.1...v1.3.0) (2022-09-13)
+
+
+### Features
+
+* add react-native support ([410e74e](https://github.com/schett-net/bridge/commit/410e74ed872a21639ab627a99846c1b361f12f9a))
+
 ## [1.2.1](https://github.com/schett-net/bridge/compare/v1.2.0...v1.2.1) (2022-09-13)
 
 
