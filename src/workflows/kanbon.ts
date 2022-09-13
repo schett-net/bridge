@@ -83,7 +83,7 @@ export const makeTokens = async (
 export const refreshTokens = async (
   session: BifrostSession
 ): Promise<boolean> => {
-  if (!session.refreshToken) return false
+  if (!(await session.getRefreshToken())) return false
 
   // Document of the refresh mutation
   const document = gql`
@@ -99,7 +99,7 @@ export const refreshTokens = async (
   const {data, errors} = await session.client.mutate<{
     userRefreshToken: refreshToken_refreshToken
   }>(document, {
-    refreshToken: session.refreshToken
+    refreshToken: await session.getRefreshToken()
   })
 
   if (errors && errors.length > 0) return false
@@ -109,8 +109,8 @@ export const refreshTokens = async (
 
     session.setRefreshTimer((exp - origIat - 30) * 1000)
 
-    session.token = data.userRefreshToken.token
-    session.refreshToken = data.userRefreshToken.refreshToken
+    await session.setToken(data.userRefreshToken.token)
+    await session.setRefreshToken(data.userRefreshToken.refreshToken)
 
     return true
   }
@@ -121,7 +121,7 @@ export const refreshTokens = async (
 export const revokeTokens = async (
   session: BifrostSession
 ): Promise<boolean> => {
-  if (!session.refreshToken) return false
+  if (!(await session.getRefreshToken())) return false
 
   // Document of the revoke mutation
   const document = gql`
@@ -135,14 +135,14 @@ export const revokeTokens = async (
   const {data, errors} = await session.client.mutate<{
     userLogout: revokeToken_revokeToken
   }>(document, {
-    refreshToken: session.refreshToken
+    refreshToken: await session.getRefreshToken()
   })
 
   if (errors && errors.length > 0) return false
 
   if (data?.userLogout?.revoked) {
-    session.token = undefined
-    session.refreshToken = undefined
+    await session.setToken(undefined)
+    await session.setRefreshToken(undefined)
 
     return true
   }

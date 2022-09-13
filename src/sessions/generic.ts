@@ -28,18 +28,26 @@ export default class Session {
    * @author Nico Schett <contact@schett.net>
    * @param {string} sId Session identifier
    */
-  constructor(private sId: string) {}
+  constructor(private sId: string) { }
 
   //> Getter
   /**
    * Get token from cookies.
    *
-   * @returns {string | undefined} A users JWT if set
+   * @returns {Promise<string | null | undefined>} A users JWT if set
    */
-  get token(): string | undefined {
-    if (this.checkPlatform() === "WEB") {
+  async getToken(): Promise<string | null | undefined> {
+    const platform = await this.checkPlatform();
+
+    if (platform === "WEB") {
       return Cookies.get(this.tokenName);
-    } else {
+    }
+    else if (platform === "ANDROID" || platform === "IOS") {
+      const { default: AsyncStorage } = await import("@react-native-async-storage/async-storage");
+
+      return await AsyncStorage.getItem(this.tokenName);
+    }
+    else {
       return this._token;
     }
   }
@@ -47,13 +55,21 @@ export default class Session {
   /**
    * Get refresh token from cookies.
    *
-   * @returns {string | undefined} A users JWT if set
+   * @returns {Promise<string | null | undefined>} A users JWT if set
    */
-  get refreshToken(): string | undefined {
-    if (this.checkPlatform() === "WEB") {
+  async getRefreshToken(): Promise<string | null | undefined> {
+    const platform = await this.checkPlatform();
+
+    if (platform === "WEB") {
       return Cookies.get(this.refreshTokenName);
-    } else {
-      return this._token;
+    }
+    else if (platform === "ANDROID" || platform === "IOS") {
+      const { default: AsyncStorage } = await import("@react-native-async-storage/async-storage");
+
+      return await AsyncStorage.getItem(this.refreshTokenName)
+    }
+    else {
+      return this._refreshToken;
     }
   }
 
@@ -65,8 +81,10 @@ export default class Session {
    * @description Saves the current token to cookies. If the value is undefined,
    *              the cookie will be removed.
    */
-  set token(value: string | undefined) {
-    if (this.checkPlatform() === "WEB") {
+  async setToken(value: string | undefined) {
+    const platform = await this.checkPlatform();
+
+    if (platform === "WEB") {
       if (value) {
         Cookies.set(this.tokenName, value ? value : "", {
           sameSite: "Lax",
@@ -76,7 +94,18 @@ export default class Session {
       } else {
         Cookies.remove(this.tokenName);
       }
-    } else {
+    }
+    else if (platform === "ANDROID" || platform === "IOS") {
+      const { default: AsyncStorage } = await import("@react-native-async-storage/async-storage");
+
+      if (value) {
+        await AsyncStorage.setItem(this.tokenName, value ? value : "");
+      }
+      else {
+        await AsyncStorage.removeItem(this.tokenName);
+      }
+    }
+    else {
       this._token = value;
     }
   }
@@ -89,8 +118,10 @@ export default class Session {
    *              is undefined, the cookie will be removed. The expire time is
    *              set to six days.
    */
-  set refreshToken(value: string | undefined) {
-    if (this.checkPlatform() === "WEB") {
+  async setRefreshToken(value: string | undefined) {
+    const platform = await this.checkPlatform();
+
+    if (platform === "WEB") {
       if (value) {
         Cookies.set(this.refreshTokenName, value ? value : "", {
           sameSite: "Lax",
@@ -100,7 +131,18 @@ export default class Session {
       } else {
         Cookies.remove(this.refreshTokenName);
       }
-    } else {
+    }
+    else if (platform === "ANDROID" || platform === "IOS") {
+      const { default: AsyncStorage } = await import("@react-native-async-storage/async-storage");
+
+      if (value) {
+        await AsyncStorage.setItem(this.refreshTokenName, value ? value : "");
+      }
+      else {
+        await AsyncStorage.removeItem(this.refreshTokenName);
+      }
+    }
+    else {
       this._refreshToken = value;
     }
   }
@@ -109,11 +151,28 @@ export default class Session {
   /**
    * Check if bridge is used by node or web.
    */
-  checkPlatform() {
-    if (typeof window === "undefined") {
-      return "NODE";
-    } else {
-      return "WEB";
+  async checkPlatform(): Promise<"WEB" | "IOS" | "ANDROID" | "NODE"> {
+    try {
+      //@ts-ignore
+      const { Platform } = await import("react-native");
+
+      if (Platform.OS === 'ios') {
+        return "IOS"
+      } else if (Platform.OS === 'android') {
+        return "ANDROID"
+      } else if (Platform.OS === 'web') {
+        return "WEB"
+      } else {
+        return "NODE"
+      }
+    }
+    catch {
+      const isWeb = typeof window !== "undefined"
+      if (isWeb) {
+        return "WEB"
+      }
+  
+      return "NODE"
     }
   }
   /**

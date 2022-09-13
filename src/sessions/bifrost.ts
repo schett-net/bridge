@@ -80,20 +80,20 @@ export default class BifrostSession extends Session {
    * @description Save the token to the client authorization header and call
    *              super.
    */
-  set token(value: string | undefined) {
+  async setToken(value: string | undefined) {
     if (value) {
       this.client.headers.Authorization = `JWT ${value}`
     } else {
       delete this.client.headers.Authorization
     }
-    super.token = value
+    await super.setToken(value)
   }
-  set refreshToken(value: string | undefined) {
-    super.refreshToken = value
+  async setRefreshToken(value: string | undefined) {
+    await super.setRefreshToken(value)
   }
   //> Getter
-  get token() {
-    const token = super.token
+  async getToken() {
+    const token = await super.getToken();
 
     // Hand over token to client. This is needed when the token is only available
     // by getter but not in current session context.
@@ -103,8 +103,8 @@ export default class BifrostSession extends Session {
 
     return token
   }
-  get refreshToken() {
-    return super.refreshToken
+  async getRefreshToken() {
+    return await super.getRefreshToken();
   }
 
   //> Methods
@@ -160,8 +160,8 @@ export default class BifrostSession extends Session {
     const auth = await makeTokens(this, username, password)
 
     if (auth) {
-      this.token = auth?.token
-      this.refreshToken = auth?.refreshToken
+      await this.setToken(auth?.token)
+      await this.setRefreshToken(auth?.refreshToken)
 
       return <any>{anonymous, ...auth?.user}
     } else {
@@ -180,8 +180,8 @@ export default class BifrostSession extends Session {
     const revokeSuccess = await revokeTokens(this)
 
     if (revokeSuccess) {
-      this.token = undefined
-      this.refreshToken = undefined
+      await this.setToken(undefined)
+      await this.setRefreshToken(undefined)
 
       if (this.refreshInterval) clearInterval(this.refreshInterval)
     }
@@ -202,7 +202,7 @@ export default class BifrostSession extends Session {
   query = async <T>(data: DocumentNode, variables?: Variables) => {
     const {refreshTokens} = this.options.workflows
 
-    if (!this.token && !(await refreshTokens(this))) {
+    if (!(await this.getToken()) && !(await refreshTokens(this))) {
       await this.begin()
     }
 
@@ -212,7 +212,7 @@ export default class BifrostSession extends Session {
   mutate = async <T>(data: DocumentNode, variables?: Variables) => {
     const {refreshTokens} = this.options.workflows
 
-    if (!this.token && !(await refreshTokens(this))) {
+    if (!(await this.getToken()) && !(await refreshTokens(this))) {
       await this.begin()
     }
 
@@ -222,7 +222,7 @@ export default class BifrostSession extends Session {
   subscribe = async <T>(data: DocumentNode, variables?: Variables) => {
     const {refreshTokens} = this.options.workflows
 
-    if (!this.token && !(await refreshTokens(this))) {
+    if (!(await this.getToken()) && !(await refreshTokens(this))) {
       await this.begin()
     }
 
