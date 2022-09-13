@@ -1,6 +1,6 @@
 {
   "name": "@snek-at/bridge",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "description": "Enoy it.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
