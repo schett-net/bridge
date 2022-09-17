@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/schett-net/bridge/compare/v1.4.0...v1.4.1) (2022-09-17)
+
+
+### Bug Fixes
+
+* compatibility changes ([f5e8ee9](https://github.com/schett-net/bridge/commit/f5e8ee95aceb374f53ad282c6c30fbea74d93127))
+
 # [1.4.0](https://github.com/schett-net/bridge/compare/v1.3.0...v1.4.0) (2022-09-13)
 
 
