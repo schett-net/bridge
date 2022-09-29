@@ -93,7 +93,7 @@ export default class BifrostSession extends Session {
   }
   //> Getter
   async getToken() {
-    const token = await super.getToken();
+    const token = await super.getToken()
 
     // Hand over token to client. This is needed when the token is only available
     // by getter but not in current session context.
@@ -104,7 +104,7 @@ export default class BifrostSession extends Session {
     return token
   }
   async getRefreshToken() {
-    return await super.getRefreshToken();
+    return await super.getRefreshToken()
   }
 
   //> Methods
@@ -199,33 +199,45 @@ export default class BifrostSession extends Session {
     }, ms)
   }
 
-  query = async <T>(data: DocumentNode, variables?: Variables) => {
+  query = async <T>(
+    data: DocumentNode,
+    variables?: Variables,
+    specifierSettings?: {[key: string]: any}
+  ) => {
     const {refreshTokens} = this.options.workflows
 
     if (!(await this.getToken()) && !(await refreshTokens(this))) {
       await this.begin()
     }
 
-    return await this.client.query<T>(data, variables)
+    return await this.client.query<T>(data, variables, specifierSettings)
   }
 
-  mutate = async <T>(data: DocumentNode, variables?: Variables) => {
+  mutate = async <T>(
+    data: DocumentNode,
+    variables?: Variables,
+    specifierSettings?: {[key: string]: any}
+  ) => {
     const {refreshTokens} = this.options.workflows
 
     if (!(await this.getToken()) && !(await refreshTokens(this))) {
       await this.begin()
     }
 
-    return await this.client.mutate<T>(data, variables)
+    return await this.client.mutate<T>(data, variables, specifierSettings)
   }
 
-  subscribe = async <T>(data: DocumentNode, variables?: Variables) => {
+  subscribe = async <T>(
+    data: DocumentNode,
+    variables?: Variables,
+    specifierSettings?: {[key: string]: any}
+  ) => {
     const {refreshTokens} = this.options.workflows
 
     if (!(await this.getToken()) && !(await refreshTokens(this))) {
       await this.begin()
     }
 
-    return this.client.subscribe<T>(data, variables)
+    return this.client.subscribe<T>(data, variables, specifierSettings)
   }
 }

@@ -6,29 +6,29 @@
  * in the LICENSE file at https://snek.at/license
  */
 
-import "isomorphic-fetch";
+import 'isomorphic-fetch'
 
-import { print } from "graphql";
-import gql from "graphql-tag";
+import {print} from 'graphql'
+import gql from 'graphql-tag'
 
-import { specifier } from "./specifier";
+import {specifier} from './specifier'
 
-describe("Test query minifying based on configuration settings", () => {
-  it("affects documents when no settings are provided", () => {
+describe('Test query minifying based on configuration settings', () => {
+  it('affects documents when no settings are provided', () => {
     const document = gql`
       query foo {
         foo
       }
-    `;
+    `
 
     const expectedDocument = gql`
       query foo {
         foo
       }
-    `;
-    expect(specifier(document)).toBe(expectedDocument);
-  });
-  it("does basic excluding according to provided settings", () => {
+    `
+    expect(specifier(document)).toBe(expectedDocument)
+  })
+  it('does basic excluding according to provided settings', () => {
     /**
      * !You must use unique documents for testing or it fails.
      */
@@ -40,14 +40,14 @@ describe("Test query minifying based on configuration settings", () => {
           address
         }
       }
-    `;
+    `
 
     const settings = {
       users: {
         id: false,
-        address: false,
-      },
-    };
+        address: false
+      }
+    }
 
     const expectedDocument = gql`
       query usersQuery1($token: String!) {
@@ -55,13 +55,13 @@ describe("Test query minifying based on configuration settings", () => {
           username
         }
       }
-    `;
+    `
 
-    const res = specifier(document, settings);
+    const res = specifier(document, settings)
 
-    expect(res).toBe(expectedDocument);
-  });
-  it("does basic excluding of all fields but `foo=true` (in setting) when `defaultExclude=true` (in setting)", () => {
+    expect(res).toBe(expectedDocument)
+  })
+  it('does basic excluding of all fields but `foo=true` (in setting) when `defaultExclude=true` (in setting)', () => {
     const document = gql`
       query usersQuery2($token: String!) {
         users(token: $token) {
@@ -70,14 +70,14 @@ describe("Test query minifying based on configuration settings", () => {
           address
         }
       }
-    `;
+    `
 
     const settings = {
       users: {
         excludeFields: true,
-        id: true,
-      },
-    };
+        id: true
+      }
+    }
 
     const expectedDocument = gql`
       query usersQuery2($token: String!) {
@@ -85,10 +85,10 @@ describe("Test query minifying based on configuration settings", () => {
           id
         }
       }
-    `;
-    expect(specifier(document, settings)).toBe(expectedDocument);
-  });
-  it("does not remove variable definitions if at least one node accesses them", () => {
+    `
+    expect(specifier(document, settings)).toBe(expectedDocument)
+  })
+  it('does not remove variable definitions if at least one node accesses them', () => {
     const document = gql`
       query usersQuery3($token: String!, $name: String!) {
         users(token: $token) {
@@ -103,13 +103,13 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
     const settings = {
       users: {
-        car: false,
-      },
-    };
+        car: false
+      }
+    }
 
     const expectedDocument = gql`
       query usersQuery3($token: String!, $name: String!) {
@@ -122,11 +122,11 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
-    expect(specifier(document, settings)).toBe(expectedDocument);
-  });
-  it("does remove variable definitions if no node accesses them", () => {
+    expect(specifier(document, settings)).toBe(expectedDocument)
+  })
+  it('does remove variable definitions if no node accesses them', () => {
     const document = gql`
       query usersQuery4($token: String!, $name: String!) {
         users(token: $token) {
@@ -141,14 +141,14 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
     const settings = {
       users: {
         car: false,
-        ship: false,
-      },
-    };
+        ship: false
+      }
+    }
 
     const expectedDocument = gql`
       query usersQuery4($token: String!) {
@@ -158,11 +158,11 @@ describe("Test query minifying based on configuration settings", () => {
           address
         }
       }
-    `;
+    `
 
-    expect(specifier(document, settings)).toBe(expectedDocument);
-  });
-  it("handles documents containing unions and interfaces", () => {
+    expect(specifier(document, settings)).toBe(expectedDocument)
+  })
+  it('handles documents containing unions and interfaces', () => {
     const document = gql`
       query usersQuery5($token: String!, $name: String!) {
         users(token: $token) {
@@ -185,16 +185,16 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
     const settings = {
       users: {
-        Goofy: false,
+        Goofy: false
       },
       users2: {
-        Goofy: false,
-      },
-    };
+        Goofy: false
+      }
+    }
 
     const expectedDocument = gql`
       query usersQuery5($token: String!) {
@@ -212,11 +212,11 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
-    expect(specifier(document, settings)).toBe(expectedDocument);
-  });
-  it("handles interfaces of pages", () => {
+    expect(specifier(document, settings)).toBe(expectedDocument)
+  })
+  it('handles interfaces of pages', () => {
     const document = gql`
       query usersQuery6($token: String!) {
         pages(token: $token) {
@@ -228,13 +228,13 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
     const settings = {
       pages: {
-        HomePage: false,
-      },
-    };
+        HomePage: false
+      }
+    }
 
     const expectedDocument = gql`
       query usersQuery6($token: String!) {
@@ -244,11 +244,11 @@ describe("Test query minifying based on configuration settings", () => {
           }
         }
       }
-    `;
+    `
 
-    expect(specifier(document, settings)).toBe(expectedDocument);
-  });
-  it("handles a large and complex document", () => {
+    expect(specifier(document, settings)).toBe(expectedDocument)
+  })
+  it('handles a large and complex document', () => {
     const document = gql`
       query imagesQuery(
         $sizes: [Int]
@@ -424,7 +424,7 @@ describe("Test query minifying based on configuration settings", () => {
           srcSet(sizes: $sizes2)
         }
       }
-    `;
+    `
 
     const settings = {
       images: {
@@ -434,10 +434,10 @@ describe("Test query minifying based on configuration settings", () => {
         uploadedByUser: {
           excludeFields: true,
           __typename: true,
-          id: true,
-        },
-      },
-    };
+          id: true
+        }
+      }
+    }
 
     const expectedDocument = gql`
       query imagesQuery(
@@ -464,15 +464,15 @@ describe("Test query minifying based on configuration settings", () => {
           fileHash
         }
       }
-    `;
+    `
 
     expect(specifier(document, settings)).toBe(
       gql`
         ${print(expectedDocument)}
       `
-    );
-  });
-  it("does not crash when fragments are used", () => {
+    )
+  })
+  it('does not crash when fragments are used', () => {
     const document = gql`
       fragment testVariables on Test {
         foo
@@ -481,7 +481,7 @@ describe("Test query minifying based on configuration settings", () => {
       query foo {
         ...testVariables
       }
-    `;
+    `
 
     const expectedDocument = gql`
       fragment testVariables on Test {
@@ -491,13 +491,13 @@ describe("Test query minifying based on configuration settings", () => {
       query foo {
         ...testVariables
       }
-    `;
-    expect(specifier(document)).toBe(expectedDocument);
-  });
-});
+    `
+    expect(specifier(document)).toBe(expectedDocument)
+  })
+})
 
-describe("Test query minifying based on configuration file", () => {
-  it("affects documents when no custom settings are provided (configuration file is defined)", () => {
+describe('Test query minifying based on configuration file', () => {
+  it('affects documents when no custom settings are provided (configuration file is defined)', () => {
     const document = gql`
       query imagesQuery2(
         $sizes: [Int]
@@ -673,7 +673,7 @@ describe("Test query minifying based on configuration file", () => {
           srcSet(sizes: $sizes2)
         }
       }
-    `;
+    `
 
     const expectedDocument = gql`
       query imagesQuery2(
@@ -699,9 +699,9 @@ describe("Test query minifying based on configuration file", () => {
           fileHash
         }
       }
-    `;
+    `
     expect(specifier(document)).toBe(gql`
       ${print(expectedDocument)}
-    `);
-  });
-});
+    `)
+  })
+})

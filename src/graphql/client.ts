@@ -122,10 +122,11 @@ export default class GraphqlClient {
    */
   async query<T>(
     data: DocumentNode,
-    variables?: Variables
+    variables?: Variables,
+    specifierSettings?: {[key: string]: any}
   ): Promise<GraphqlResult<T>> {
     return this.client.query<T>({
-      query: specifier(data),
+      query: specifier(data, specifierSettings),
       errorPolicy: 'all',
       fetchPolicy: 'no-cache',
       variables,
@@ -147,7 +148,8 @@ export default class GraphqlClient {
    */
   async mutate<T>(
     data: DocumentNode,
-    variables?: Variables
+    variables?: Variables,
+    specifierSettings?: {[key: string]: any}
   ): Promise<GraphqlResult<T>> {
     return this.client.mutate<T>({
       mutation: data,
@@ -167,7 +169,11 @@ export default class GraphqlClient {
    *                              the query structure.
    * @returns {Observable<GraphqlResult<T>>} Apollo data observable
    */
-  subscribe<T>(data: DocumentNode, variables?: Variables) {
+  subscribe<T>(
+    data: DocumentNode,
+    variables?: Variables,
+    specifierSettings?: {[key: string]: any}
+  ) {
     return this.client.subscribe<T>({
       query: data,
       variables,
