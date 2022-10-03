@@ -8,9 +8,7 @@
 
 import Cookies from 'js-cookie'
 
-const dynamicReactNative = 'react-native'
-const dynamicReactNativeAsyncStorage =
-  '@react-native-async-storage/async-storage'
+const isWindow = typeof window !== 'undefined'
 
 /**
  * @class A general Session with token functionality.
@@ -24,6 +22,53 @@ export default class Session {
   refreshTokenName: string = 'refresh'
   _token: string | undefined = undefined
   _refreshToken: string | undefined = undefined
+
+  static tokenStorageAdapter = {
+    getToken: async (self: Session) => {
+      if (isWindow) {
+        return Cookies.get(self.tokenName)
+      } else {
+        return self._token
+      }
+    },
+    setToken: async (self: Session, value: string | undefined) => {
+      if (isWindow) {
+        if (value) {
+          Cookies.set(self.tokenName, value ? value : '', {
+            sameSite: 'Lax',
+            /* Expire time is set to 4 minutes */
+            expires: 4 / 1440
+          })
+        } else {
+          Cookies.remove(self.tokenName)
+        }
+      } else {
+        self._token = value
+      }
+    },
+    getRefreshToken: async (self: Session) => {
+      if (isWindow) {
+        return Cookies.get(self.refreshTokenName)
+      } else {
+        return self._refreshToken
+      }
+    },
+    setRefreshToken: async (self: Session, value: string | undefined) => {
+      if (isWindow) {
+        if (value) {
+          Cookies.set(self.refreshTokenName, value ? value : '', {
+            sameSite: 'Lax',
+            /* Expire time is set to 6 days */
+            expires: 6
+          })
+        } else {
+          Cookies.remove(self.refreshTokenName)
+        }
+      } else {
+        self._refreshToken = value
+      }
+    }
+  }
 
   /**
    * Initializes a base Session.
@@ -41,19 +86,7 @@ export default class Session {
    * @returns {Promise<string | null | undefined>} A users JWT if set
    */
   async getToken(): Promise<string | null | undefined> {
-    const platform = await this.checkPlatform()
-
-    if (platform === 'WEB') {
-      return Cookies.get(this.tokenName)
-    } else if (platform === 'ANDROID' || platform === 'IOS') {
-      const {default: AsyncStorage} = await import(
-        `${dynamicReactNativeAsyncStorage}`
-      )
-
-      return await AsyncStorage.getItem(this.tokenName)
-    } else {
-      return this._token
-    }
+    return Session.tokenStorageAdapter.getToken(this)
   }
 
   /**
@@ -62,19 +95,7 @@ export default class Session {
    * @returns {Promise<string | null | undefined>} A users JWT if set
    */
   async getRefreshToken(): Promise<string | null | undefined> {
-    const platform = await this.checkPlatform()
-
-    if (platform === 'WEB') {
-      return Cookies.get(this.refreshTokenName)
-    } else if (platform === 'ANDROID' || platform === 'IOS') {
-      const {default: AsyncStorage} = await import(
-        `${dynamicReactNativeAsyncStorage}`
-      )
-
-      return await AsyncStorage.getItem(this.refreshTokenName)
-    } else {
-      return this._refreshToken
-    }
+    return Session.tokenStorageAdapter.getRefreshToken(this)
   }
 
   //> Setter
@@ -86,31 +107,7 @@ export default class Session {
    *              the cookie will be removed.
    */
   async setToken(value: string | undefined) {
-    const platform = await this.checkPlatform()
-
-    if (platform === 'WEB') {
-      if (value) {
-        Cookies.set(this.tokenName, value ? value : '', {
-          sameSite: 'Lax',
-          /* Expire time is set to 4 minutes */
-          expires: 4 / 1440
-        })
-      } else {
-        Cookies.remove(this.tokenName)
-      }
-    } else if (platform === 'ANDROID' || platform === 'IOS') {
-      const {default: AsyncStorage} = await import(
-        `${dynamicReactNativeAsyncStorage}`
-      )
-
-      if (value) {
-        await AsyncStorage.setItem(this.tokenName, value ? value : '')
-      } else {
-        await AsyncStorage.removeItem(this.tokenName)
-      }
-    } else {
-      this._token = value
-    }
+    return Session.tokenStorageAdapter.setToken(this, value)
   }
 
   /**
@@ -122,59 +119,11 @@ export default class Session {
    *              set to six days.
    */
   async setRefreshToken(value: string | undefined) {
-    const platform = await this.checkPlatform()
-
-    if (platform === 'WEB') {
-      if (value) {
-        Cookies.set(this.refreshTokenName, value ? value : '', {
-          sameSite: 'Lax',
-          /* Expire time is set to 6 days */
-          expires: 6
-        })
-      } else {
-        Cookies.remove(this.refreshTokenName)
-      }
-    } else if (platform === 'ANDROID' || platform === 'IOS') {
-      const {default: AsyncStorage} = await import(
-        `${dynamicReactNativeAsyncStorage}`
-      )
-
-      if (value) {
-        await AsyncStorage.setItem(this.refreshTokenName, value ? value : '')
-      } else {
-        await AsyncStorage.removeItem(this.refreshTokenName)
-      }
-    } else {
-      this._refreshToken = value
-    }
+    return Session.tokenStorageAdapter.setRefreshToken(this, value)
   }
 
   //> Methods
-  /**
-   * Check if bridge is used by node or web.
-   */
-  async checkPlatform(): Promise<'WEB' | 'IOS' | 'ANDROID' | 'NODE'> {
-    try {
-      const {Platform} = await import(`${dynamicReactNative}`)
 
-      if (Platform.OS === 'ios') {
-        return 'IOS'
-      } else if (Platform.OS === 'android') {
-        return 'ANDROID'
-      } else if (Platform.OS === 'web') {
-        return 'WEB'
-      } else {
-        return 'NODE'
-      }
-    } catch {
-      const isWeb = typeof window !== 'undefined'
-      if (isWeb) {
-        return 'WEB'
-      }
-
-      return 'NODE'
-    }
-  }
   /**
    * Add a subSession to a session.
    *
