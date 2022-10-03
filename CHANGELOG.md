@@ -1,3 +1,11 @@
+## [1.4.2](https://github.com/schett-net/bridge/compare/v1.4.1...v1.4.2) (2022-10-03)
+
+
+### Bug Fixes
+
+* add token expire dates for react-native ([2ab6523](https://github.com/schett-net/bridge/commit/2ab652355906c93c5367d52e45ee99c4cd771c0a))
+* webpack comp. react native support ([917c4fb](https://github.com/schett-net/bridge/commit/917c4fb489a5e6696823179fa5256f03fca24e58))
+
 ## [1.4.1](https://github.com/schett-net/bridge/compare/v1.4.0...v1.4.1) (2022-09-17)
 
 
