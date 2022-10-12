@@ -61,7 +61,7 @@ Session.tokenStorageAdapter = {
       await ExpireStorage.setItem(
         self.tokenName,
         value,
-        Session.tokenExpireDays * 24 * 60 * 60
+        Session.tokenExpireSeconds / 60
       )
     } else {
       await ExpireStorage.removeItem(self.tokenName)
@@ -75,7 +75,7 @@ Session.tokenStorageAdapter = {
       await ExpireStorage.setItem(
         self.refreshTokenName,
         value,
-        Session.refreshTokenExpireDays * 24 * 60 * 60
+        Session.refreshTokenExpireSeconds / 60
       )
     } else {
       await ExpireStorage.removeItem(self.refreshTokenName)

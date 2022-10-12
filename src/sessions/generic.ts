@@ -23,9 +23,9 @@ export default class Session {
   _token: string | undefined = undefined
   _refreshToken: string | undefined = undefined
 
-  public static readonly tokenExpireDays = 4 / 1440
+  public static readonly tokenExpireSeconds = 60 * 5 // 5 minutes
 
-  public static readonly refreshTokenExpireDays = 6
+  public static readonly refreshTokenExpireSeconds = 60 * 60 * 24 * 7 // 6 days
 
   static tokenStorageAdapter = {
     getToken: async (self: Session) => {
@@ -41,7 +41,7 @@ export default class Session {
           Cookies.set(self.tokenName, value ? value : '', {
             sameSite: 'Lax',
             /* Expire time is set to 4 minutes */
-            expires: Session.tokenExpireDays
+            expires: Session.tokenExpireSeconds / 1440 // 60 seconds * 24 hours
           })
         } else {
           Cookies.remove(self.tokenName)
@@ -63,7 +63,7 @@ export default class Session {
           Cookies.set(self.refreshTokenName, value ? value : '', {
             sameSite: 'Lax',
             /* Expire time is set to 6 days */
-            expires: Session.refreshTokenExpireDays
+            expires: Session.refreshTokenExpireSeconds / 1440 // 60 seconds * 24 hours
           })
         } else {
           Cookies.remove(self.refreshTokenName)
