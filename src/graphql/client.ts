@@ -152,7 +152,7 @@ export default class GraphqlClient {
     specifierSettings?: {[key: string]: any}
   ): Promise<GraphqlResult<T>> {
     return this.client.mutate<T>({
-      mutation: data,
+      mutation: specifier(data, specifierSettings),
       errorPolicy: 'all',
       variables,
       context: {
