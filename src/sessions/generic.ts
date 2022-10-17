@@ -41,7 +41,9 @@ export default class Session {
           Cookies.set(self.tokenName, value ? value : '', {
             sameSite: 'Lax',
             /* Expire time is set to 4 minutes */
-            expires: Session.tokenExpireSeconds / 1440 // 60 seconds * 24 hours
+            expires: new Date(
+              new Date().getTime() + Session.tokenExpireSeconds * 1000
+            )
           })
         } else {
           Cookies.remove(self.tokenName)
@@ -63,7 +65,9 @@ export default class Session {
           Cookies.set(self.refreshTokenName, value ? value : '', {
             sameSite: 'Lax',
             /* Expire time is set to 6 days */
-            expires: Session.refreshTokenExpireSeconds / 1440 // 60 seconds * 24 hours
+            expires: new Date(
+              new Date().getTime() + Session.refreshTokenExpireSeconds * 1000
+            )
           })
         } else {
           Cookies.remove(self.refreshTokenName)

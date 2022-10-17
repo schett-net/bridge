@@ -9,34 +9,47 @@ type Data = {
 }
 
 export default class ExpireStorage {
+  private static getDataFromStorage = async (
+    key: string
+  ): Promise<Data | null> => {
+    const data = await AsyncStorage.getItem(key)
+    if (data) {
+      return JSON.parse(data)
+    }
+    return null
+  }
+
   static async getItem(key: string) {
-    let data = await AsyncStorage.getItem(key)
-    data = JSON.parse(data)
+    const data = await this.getDataFromStorage(key)
+
     if (
       data !== null &&
       data.expireAt &&
       new Date(data.expireAt) < new Date()
     ) {
       await AsyncStorage.removeItem(key)
-      data = null
     }
     return data?.value
   }
 
-  static async setItem(key: string, value: any, expireInMinutes: number) {
+  static async setItem(key: string, value: any, expireInMinutes?: number) {
     const data = {value} as Data
+
     if (expireInMinutes) {
-      const expireAt = this.getExpireDate(expireInMinutes)
-      data.expireAt = expireAt
+      data.expireAt = this.getExpireDate(expireInMinutes)
     } else {
-      const expireAt = JSON.parse(await AsyncStorage.getItem(key))?.expireAt
-      if (expireAt) {
-        data.expireAt = expireAt
+      const oldData = await this.getDataFromStorage(key)
+
+      if (oldData) {
+        data.expireAt = oldData.expireAt
       } else {
+        // Cannot set item without expire time
         return
       }
     }
+
     const objectToStore = JSON.stringify(data)
+
     return AsyncStorage.setItem(key, objectToStore)
   }
 
