@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/schett-net/bridge/compare/v1.4.2...v1.5.0) (2022-10-17)
+
+
+### Features
+
+* allow specifier for gql mutate ([3978f90](https://github.com/schett-net/bridge/commit/3978f900f10a3e03f782ba99c42891b4c127c8b7))
+
 ## [1.4.2](https://github.com/schett-net/bridge/compare/v1.4.1...v1.4.2) (2022-10-03)
 
 
